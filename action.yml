@@ -2,9 +2,6 @@
 # yamllint disable rule:line-length
 name: Create APT repository
 description: Create APT repository using reprepro
-branding:
-  icon: package
-  color: purple
 inputs:
   repo-name:
     description: >-
@@ -14,9 +11,6 @@ inputs:
     description: >-
       Scan this directory for packages to include in the repo.
       If unset, defaults to ${PWD}.
-  keyring-name:
-    description: >-
-      Keyring name. If unset, defaults to repo-name-keyring.
   origin:
     description: >-
       Origin. If unset, defaults to repo-name.
@@ -51,10 +45,6 @@ inputs:
       Private gpg key for signing.
       Please use Secrets!
     required: true
-  import-from-repo-url:
-    description: >-
-      Import existing packages from this repo url.
-      Workaround for immutable GH actions cache.
   maintainer:
     description: >-
       Package maintainer for keyring package.
@@ -78,31 +68,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Setup reprepro debian repository
-      uses: myci-actions/add-deb-repo@11
-      with:
-        repo: deb https://packaging.gitlab.io/reprepro-multiple-versions jammy main
-        repo-name: reprepro-multiple-versions
-        keys-asc: https://packaging.gitlab.io/reprepro-multiple-versions/gpg.key
-        update: true
-    - name: Install reprepro
-      uses: awalsh128/cache-apt-pkgs-action@latest
-      with:
-        packages: apt-mirror apt-transport-https reprepro
-    - name: Install nfpm
-      uses: robinraju/release-downloader@v1.10
-      with:
-        repository: goreleaser/nfpm
-        fileName: '*Linux_x86_64.tar.gz'
-        latest: true
-        extract: true
-        out-file-path: "/tmp/"
-    - name: Import from APT repo
-      id: import-from-apt-repo
-      run: ${{ github.action_path }}/import.sh
-      shell: bash
-      env:
-        IMPORT_FROM_REPO: ${{ inputs.import-from-repo-url }}
     - name: Create APT repo
       id: create-apt-repo
       run: ${{ github.action_path }}/repo.sh

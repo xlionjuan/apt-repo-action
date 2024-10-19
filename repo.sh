@@ -35,28 +35,7 @@ for fingerprint in "${fingerprints[@]}"; do
     creation_date="${pub[5]}"
     keyring_version=$(("${keyring_version}" + "${creation_date}"))
     gpg --export "${fingerprint}" >"${keyring_name}-${creation_date}.gpg"
-    keyring_files+=("${keyring_name}-${creation_date}.gpg")
 done
-
-cat >"${tmpdir}/keyring-nfpm.yaml" <<EOF
-name: ${keyring_name}
-arch: all
-version: ${keyring_version}
-version_schema: none
-maintainer: ${maintainer}
-description: ${repo_name} keyring
-homepage: ${homepage}
-contents:
-EOF
-
-for keyring_file in "${keyring_files[@]}"; do
-    cat >>"${tmpdir}/keyring-nfpm.yaml" <<EOF
-  - src: ${keyring_file}
-    dst: /etc/apt/trusted.gpg.d/
-EOF
-done
-
-/tmp/nfpm package --config "${tmpdir}/keyring-nfpm.yaml" --packager deb
 
 if [ -d "${scan_dir}/.repo" ]; then
     cp -rv "${scan_dir}/.repo" "${tmpdir}"/
