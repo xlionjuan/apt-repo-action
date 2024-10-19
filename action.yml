@@ -86,12 +86,7 @@ runs:
         latest: true
         extract: true
         out-file-path: "/tmp/"
-    - name: Import from APT repo
-      id: import-from-apt-repo
-      run: ${{ github.action_path }}/import.sh
-      shell: bash
-      env:
-        IMPORT_FROM_REPO: ${{ inputs.import-from-repo-url }}
+
     - name: Create APT repo
       id: create-apt-repo
       run: ${{ github.action_path }}/repo.sh
