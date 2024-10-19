@@ -81,7 +81,7 @@ runs:
 
     - name: Create APT repo
       id: create-apt-repo
-      run: ${{ github.action_path }}/repo.sh
+      run: ${GITHUB_ACTION_PATH}/repo.sh
       shell: bash
       env:
         REPO_NAME: ${{ inputs.repo-name }}
